@@ -12,12 +12,14 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: code_location
+  - type: textarea
+    id: code_locations
     attributes:
       label: 📍 挿入コード位置（GitHub パーマリンク）
-      description: フラグを挿入したコードの GitHub パーマリンクを貼ってください
-      placeholder: https://github.com/your-org/your-repo/blob/xxx
+      description: 複数ある場合は箇条書きで記載してください
+      placeholder: |
+        - https://github.com/your-org/your-repo/blob/...
+        - https://github.com/your-org/your-repo/blob/...
     validations:
       required: true
 
