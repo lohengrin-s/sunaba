@@ -1,0 +1,70 @@
+name: ? Feature Flag 管理票
+description: 新しく導入する Feature Flag の管理情報を記載します。
+title: "[FeatureFlag] フラグ名を記載してください"
+labels: [feature-flag]
+body:
+  - type: input
+    id: flag_name
+    attributes:
+      label: ? フラグ名
+      description: 使用するフラグの名前（例：enableNewCheckoutFlow）
+      placeholder: 例）enableNewCheckoutFlow
+    validations:
+      required: true
+
+  - type: input
+    id: code_location
+    attributes:
+      label: ? 挿入コード位置（GitHub パーマリンク）
+      description: フラグを挿入したコードの GitHub パーマリンクを貼ってください
+      placeholder: https://github.com/your-org/your-repo/blob/xxx
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: ? フラグの目的
+      description: この Feature Flag を導入する理由、背景、PoC or 恒久対応 などを記載
+      placeholder: 例）新しいチェックアウト画面の PoC。後日 AB テストにて恒久化を判断。
+    validations:
+      required: true
+
+  - type: input
+    id: removal_date
+    attributes:
+      label: ? 除去予定日
+      description: このフラグを除去予定の日付を記載（例：リリース後2週間後など）
+      placeholder: YYYY-MM-DD（例：2025-06-01）
+    validations:
+      required: true
+
+  - type: input
+    id: created_date
+    attributes:
+      label: ? 作成日
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+
+  - type: input
+    id: jira_ticket
+    attributes:
+      label: ? 除去予定の JIRA チケット
+      description: フラグ除去に関する JIRA チケットのリンクを記載してください
+      placeholder: https://jira.example.com/browse/JIRA-1234
+    validations:
+      required: true
+
+  - type: textarea
+    id: removal_condition
+    attributes:
+      label: ? 除去条件
+      description: フラグ除去の判断条件を明記してください（例：PoC評価完了、リリース完了後○日など）
+      placeholder: 例）フィードバックで問題がなければリリース1週間後に除去
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: ? 備考
+      description: その他補足事項があれば記載してください（任意）
