@@ -1,22 +1,22 @@
-name: ? Feature Flag ŠÇ—•[
-description: V‚µ‚­“±“ü‚·‚é Feature Flag ‚ÌŠÇ—î•ñ‚ğ‹LÚ‚µ‚Ü‚·B
-title: "[FeatureFlag] ƒtƒ‰ƒO–¼‚ğ‹LÚ‚µ‚Ä‚­‚¾‚³‚¢"
+name: ğŸš© Feature Flag ç®¡ç†ç¥¨
+description: æ–°ã—ãå°å…¥ã™ã‚‹ Feature Flag ã®ç®¡ç†æƒ…å ±ã‚’è¨˜è¼‰ã—ã¾ã™ã€‚
+title: "[FeatureFlag] ãƒ•ãƒ©ã‚°åã‚’è¨˜è¼‰ã—ã¦ãã ã•ã„"
 labels: [feature-flag]
 body:
   - type: input
     id: flag_name
     attributes:
-      label: ? ƒtƒ‰ƒO–¼
-      description: g—p‚·‚éƒtƒ‰ƒO‚Ì–¼‘Oi—áFenableNewCheckoutFlowj
-      placeholder: —ájenableNewCheckoutFlow
+      label: ğŸ”– ãƒ•ãƒ©ã‚°å
+      description: ä½¿ç”¨ã™ã‚‹ãƒ•ãƒ©ã‚°ã®åå‰ï¼ˆä¾‹ï¼šenableNewCheckoutFlowï¼‰
+      placeholder: ä¾‹ï¼‰enableNewCheckoutFlow
     validations:
       required: true
 
   - type: input
     id: code_location
     attributes:
-      label: ? ‘}“üƒR[ƒhˆÊ’uiGitHub ƒp[ƒ}ƒŠƒ“ƒNj
-      description: ƒtƒ‰ƒO‚ğ‘}“ü‚µ‚½ƒR[ƒh‚Ì GitHub ƒp[ƒ}ƒŠƒ“ƒN‚ğ“\‚Á‚Ä‚­‚¾‚³‚¢
+      label: ğŸ“ æŒ¿å…¥ã‚³ãƒ¼ãƒ‰ä½ç½®ï¼ˆGitHub ãƒ‘ãƒ¼ãƒãƒªãƒ³ã‚¯ï¼‰
+      description: ãƒ•ãƒ©ã‚°ã‚’æŒ¿å…¥ã—ãŸã‚³ãƒ¼ãƒ‰ã® GitHub ãƒ‘ãƒ¼ãƒãƒªãƒ³ã‚¯ã‚’è²¼ã£ã¦ãã ã•ã„
       placeholder: https://github.com/your-org/your-repo/blob/xxx
     validations:
       required: true
@@ -24,25 +24,25 @@ body:
   - type: textarea
     id: purpose
     attributes:
-      label: ? ƒtƒ‰ƒO‚Ì–Ú“I
-      description: ‚±‚Ì Feature Flag ‚ğ“±“ü‚·‚é——RA”wŒiAPoC or P‹v‘Î‰ ‚È‚Ç‚ğ‹LÚ
-      placeholder: —ájV‚µ‚¢ƒ`ƒFƒbƒNƒAƒEƒg‰æ–Ê‚Ì PoCBŒã“ú AB ƒeƒXƒg‚É‚ÄP‹v‰»‚ğ”»’fB
+      label: ğŸ¯ ãƒ•ãƒ©ã‚°ã®ç›®çš„
+      description: ã“ã® Feature Flag ã‚’å°å…¥ã™ã‚‹ç†ç”±ã€èƒŒæ™¯ã€PoC or æ’ä¹…å¯¾å¿œ ãªã©ã‚’è¨˜è¼‰
+      placeholder: ä¾‹ï¼‰æ–°ã—ã„ãƒã‚§ãƒƒã‚¯ã‚¢ã‚¦ãƒˆç”»é¢ã® PoCã€‚å¾Œæ—¥ AB ãƒ†ã‚¹ãƒˆã«ã¦æ’ä¹…åŒ–ã‚’åˆ¤æ–­ã€‚
     validations:
       required: true
 
   - type: input
     id: removal_date
     attributes:
-      label: ? œ‹—\’è“ú
-      description: ‚±‚Ìƒtƒ‰ƒO‚ğœ‹—\’è‚Ì“ú•t‚ğ‹LÚi—áFƒŠƒŠ[ƒXŒã2TŠÔŒã‚È‚Çj
-      placeholder: YYYY-MM-DDi—áF2025-06-01j
+      label: â³ é™¤å»äºˆå®šæ—¥
+      description: ã“ã®ãƒ•ãƒ©ã‚°ã‚’é™¤å»äºˆå®šã®æ—¥ä»˜ã‚’è¨˜è¼‰ï¼ˆä¾‹ï¼šãƒªãƒªãƒ¼ã‚¹å¾Œ2é€±é–“å¾Œãªã©ï¼‰
+      placeholder: YYYY-MM-DDï¼ˆä¾‹ï¼š2025-06-01ï¼‰
     validations:
       required: true
 
   - type: input
     id: created_date
     attributes:
-      label: ? ì¬“ú
+      label: ğŸ“… ä½œæˆæ—¥
       placeholder: YYYY-MM-DD
     validations:
       required: true
@@ -50,8 +50,8 @@ body:
   - type: input
     id: jira_ticket
     attributes:
-      label: ? œ‹—\’è‚Ì JIRA ƒ`ƒPƒbƒg
-      description: ƒtƒ‰ƒOœ‹‚ÉŠÖ‚·‚é JIRA ƒ`ƒPƒbƒg‚ÌƒŠƒ“ƒN‚ğ‹LÚ‚µ‚Ä‚­‚¾‚³‚¢
+      label: ğŸ“Œ é™¤å»äºˆå®šã® JIRA ãƒã‚±ãƒƒãƒˆ
+      description: ãƒ•ãƒ©ã‚°é™¤å»ã«é–¢ã™ã‚‹ JIRA ãƒã‚±ãƒƒãƒˆã®ãƒªãƒ³ã‚¯ã‚’è¨˜è¼‰ã—ã¦ãã ã•ã„
       placeholder: https://jira.example.com/browse/JIRA-1234
     validations:
       required: true
@@ -59,12 +59,12 @@ body:
   - type: textarea
     id: removal_condition
     attributes:
-      label: ? œ‹ğŒ
-      description: ƒtƒ‰ƒOœ‹‚Ì”»’fğŒ‚ğ–¾‹L‚µ‚Ä‚­‚¾‚³‚¢i—áFPoC•]‰¿Š®—¹AƒŠƒŠ[ƒXŠ®—¹Œã›“ú‚È‚Çj
-      placeholder: —ájƒtƒB[ƒhƒoƒbƒN‚Å–â‘è‚ª‚È‚¯‚ê‚ÎƒŠƒŠ[ƒX1TŠÔŒã‚Éœ‹
+      label: âœ… é™¤å»æ¡ä»¶
+      description: ãƒ•ãƒ©ã‚°é™¤å»ã®åˆ¤æ–­æ¡ä»¶ã‚’æ˜è¨˜ã—ã¦ãã ã•ã„ï¼ˆä¾‹ï¼šPoCè©•ä¾¡å®Œäº†ã€ãƒªãƒªãƒ¼ã‚¹å®Œäº†å¾Œâ—‹æ—¥ãªã©ï¼‰
+      placeholder: ä¾‹ï¼‰ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯ã§å•é¡ŒãŒãªã‘ã‚Œã°ãƒªãƒªãƒ¼ã‚¹1é€±é–“å¾Œã«é™¤å»
 
   - type: textarea
     id: notes
     attributes:
-      label: ? ”õl
-      description: ‚»‚Ì‘¼•â‘«–€‚ª‚ ‚ê‚Î‹LÚ‚µ‚Ä‚­‚¾‚³‚¢i”CˆÓj
+      label: ğŸ‘€ å‚™è€ƒ
+      description: ãã®ä»–è£œè¶³äº‹é …ãŒã‚ã‚Œã°è¨˜è¼‰ã—ã¦ãã ã•ã„ï¼ˆä»»æ„ï¼‰
