@@ -1,0 +1,30 @@
+# .github/workflows/check-expired-flags.yml
+name: Check Expired FeatureFlags
+
+on:
+  schedule:
+    - cron: "0 10 * * 1"  # 毎週月曜 10:00 JST（UTC 1:00）
+  workflow_dispatch:
+
+jobs:
+  check-flags:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REPO: ${{ secrets.ORG_REPOSITORY }}
+      ISSUE_LABEL: feature-flag
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Run expired flag check
+        run: python .github/scripts/check_expired_flags.py
