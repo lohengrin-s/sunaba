@@ -8,6 +8,27 @@ load_dotenv()
 GITHUB_REPO = os.getenv("GITHUB_REPO")
 LABEL = "feature-flag"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+
+
+repo = os.getenv("GITHUB_REPO", "leexei/sunaba")
+token = os.getenv("GITHUB_TOKEN")
+
+if not token:
+    print("❌ GITHUB_TOKEN が設定されていません")
+    exit(1)
+
+headers = {
+    "Authorization": f"Bearer {token}",
+    "Accept": "application/vnd.github+json"
+}
+issues_url = f"https://api.github.com/repos/{repo}/issues"
+params = {"state": "open", "labels": "feature-flag"}
+response = requests.get(issues_url, headers=headers, params=params)
+
+print("🔍 Status Code:", response.status_code)
+print("🔍 Response Text:", response.text)
+
+
 HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
 def get_feature_flag_issues():
