@@ -6,13 +6,17 @@ on:
     - cron: "0 10 * * 1"  # 毎週月曜 10:00 JST（UTC 1:00）
   workflow_dispatch:
 
+permissions: 
+  contents: read
+  issues: read
+
 jobs:
   check-flags:
     runs-on: ubuntu-latest
     env:
-      GITHUB_REPO: ${{ secrets.ORG_REPOSITORY }}
+      GITHUB_REPO: ${{ github.repository }}
       ISSUE_LABEL: feature-flag
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
 
     steps:
       - name: Checkout
