@@ -31,10 +31,12 @@ def main():
     expired = []
 
     for issue in issues:
-        removal_date = extract_removal_date(issue["body"])
-        if removal_date and removal_date < today:
-            expired.append((issue["title"], removal_date, issue["html_url"]))
-
+        if isinstance(issue, dict) and "body" in issue:
+            removal_date = extract_removal_date(issue["body"])
+            if removal_date and removal_date < today:
+                expired.append((issue["title"], removal_date, issue["html_url"]))
+        else:
+            print("⚠️ Warning: 無効なissueデータ形式", issue)
     if expired:
         print("? 期限超過のFeatureFlags:")
         for title, date, url in expired:
