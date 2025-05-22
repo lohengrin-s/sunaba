@@ -1,72 +1,30 @@
 name: 🚩 Feature Flag 管理票
-description: 新しく導入する Feature Flag の管理情報を記載します。
-title: "[FeatureFlag] フラグ名を記載してください"
+description: FeatureFlag導入時の運用チケット
+title: "[FF] <フラグ名>"
 labels: [feature-flag]
 body:
   - type: input
     id: flag_name
     attributes:
-      label: 🔖 フラグ名
-      description: 使用するフラグの名前（例：enableNewCheckoutFlow）
-      placeholder: 例）enableNewCheckoutFlow
-    validations:
-      required: true
-
-  - type: textarea
-    id: code_locations
-    attributes:
-      label: 📍 挿入コード位置（GitHub パーマリンク）
-      description: 複数ある場合は箇条書きで記載してください
-      placeholder: |
-        - https://github.com/your-org/your-repo/blob/...
-        - https://github.com/your-org/your-repo/blob/...
-    validations:
-      required: true
-
+      label: フラグ名
+      description: feature_flag.yml に記載するキー名
   - type: textarea
     id: purpose
     attributes:
-      label: 🎯 フラグの目的
-      description: この Feature Flag を導入する理由、背景、PoC or 恒久対応 などを記載
-      placeholder: 例）新しいチェックアウト画面の PoC。後日 AB テストにて恒久化を判断。
-    validations:
-      required: true
-
+      label: フラグの目的
+      description: なぜこのフラグが必要か／切り戻しの可能性など
   - type: input
     id: removal_date
     attributes:
-      label: ⏳ 除去予定日
-      description: このフラグを除去予定の日付を記載（例：リリース後2週間後など）
-      placeholder: YYYY-MM-DD（例：2025-06-01）
-    validations:
-      required: true
-
-  - type: input
-    id: created_date
-    attributes:
-      label: 📅 作成日
-      placeholder: YYYY-MM-DD
-    validations:
-      required: true
-
-  - type: input
-    id: jira_ticket
-    attributes:
-      label: 📌 除去予定の JIRA チケット
-      description: フラグ除去に関する JIRA チケットのリンクを記載してください
-      placeholder: https://jira.example.com/browse/JIRA-1234
-    validations:
-      required: true
-
+      label: 除去予定日
+      description: 除去する予定日（YYYY-MM-DD）
   - type: textarea
-    id: removal_condition
+    id: code_links
     attributes:
-      label: ✅ 除去条件
-      description: フラグ除去の判断条件を明記してください（例：PoC評価完了、リリース完了後○日など）
-      placeholder: 例）フィードバックで問題がなければリリース1週間後に除去
-
+      label: フラグ適用コード位置（後から追記OK）
+      description: 実装完了後にGitHubパーマリンクで記載
   - type: textarea
     id: notes
     attributes:
-      label: 👀 備考
-      description: その他補足事項があれば記載してください（任意）
+      label: 備考
+      description: その他コメントや関連PR, JIRAなど
