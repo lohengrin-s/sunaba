@@ -13,6 +13,7 @@ permissions:
 jobs:
   check-flags:
     runs-on: ubuntu-latest
+    environment: ActionsSecret
     env:
       GITHUB_REPO: ${{ github.repository }}
       ISSUE_LABEL: feature-flag
