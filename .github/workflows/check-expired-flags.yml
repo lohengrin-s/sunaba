@@ -26,5 +26,8 @@ jobs:
       - name: Install requests
         run: pip install requests
 
+      - name: Install dotenv
+        run: pip install python-dotenv
+
       - name: Run expired flag check
         run: python .github/scripts/check_expired_flags.py
