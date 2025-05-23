@@ -7,7 +7,7 @@ body:
     id: flag_name
     attributes:
       label: フラグ名
-      description: feature_flag.yml に記載するキー名
+      description: application.yml に記載するキー名
   - type: textarea
     id: purpose
     attributes:

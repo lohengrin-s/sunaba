@@ -2,8 +2,8 @@
 name: Check Expired FeatureFlags
 
 on:
-  schedule:
-    - cron: "0 10 * * 1"  # 毎週月曜 10:00 JST（UTC 1:00）
+  schedule: # 毎日 9:00 JST（土日を除く）
+    - cron: '0 0 * * 1-5'
   workflow_dispatch:
 
 permissions: 
@@ -16,7 +16,7 @@ jobs:
     environment: ActionsSecret
     env:
       GITHUB_REPO: ${{ github.repository }}
-      ISSUE_LABEL: feature-flag
+      ISSUE_LABEL: feature-flag # GitHubでこのラベルを用意しておいてください
       GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
 
     steps:

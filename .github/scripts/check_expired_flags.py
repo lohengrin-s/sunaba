@@ -1,5 +1,6 @@
 import requests
 import os
+import re
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -9,26 +10,6 @@ GITHUB_REPO = os.getenv("GITHUB_REPO")
 LABEL = "feature-flag"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-
-repo = os.getenv("GITHUB_REPO", "leexei/sunaba")
-token = os.getenv("GITHUB_TOKEN")
-
-if not token:
-    print("❌ GITHUB_TOKEN が設定されていません")
-    exit(1)
-
-headers = {
-    "Authorization": f"Bearer {token}",
-    "Accept": "application/vnd.github+json"
-}
-issues_url = f"https://api.github.com/repos/{repo}/issues"
-params = {"state": "open", "labels": "feature-flag"}
-response = requests.get(issues_url, headers=headers, params=params)
-
-print("🔍 Status Code:", response.status_code)
-print("🔍 Response Text:", response.text)
-
-
 HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
 def get_feature_flag_issues():
@@ -37,13 +18,14 @@ def get_feature_flag_issues():
     return response.json()
 
 def extract_removal_date(body):
-    for line in body.splitlines():
-        if "除去予定日" in line or "removal_date" in line.lower():
-            date_str = line.split(":")[-1].strip()
-            try:
-                return datetime.strptime(date_str, "%Y-%m-%d").date()
-            except:
-                return None
+    lines = body.splitlines()
+    for i, line in enumerate(lines):
+        if "除去予定日" in line:
+            # 次の行が日付であることを期待
+            if i + 2 < len(lines):
+                date_line = lines[i + 2].strip()
+                if re.match(r"\d{4}-\d{2}-\d{2}", date_line):
+                    return date_line
     return None
 
 def main():
@@ -54,8 +36,9 @@ def main():
     for issue in issues:
         if isinstance(issue, dict) and "body" in issue:
             removal_date = extract_removal_date(issue["body"])
-            if removal_date and removal_date < today:
-                expired.append((issue["title"], removal_date, issue["html_url"]))
+            if removal_date:
+                if datetime.strptime(removal_date, "%Y-%m-%d").date() < today:
+                    expired.append((issue["title"], removal_date, issue["html_url"]))
         else:
             print("⚠️ Warning: 無効なissueデータ形式", issue)
     if expired:
