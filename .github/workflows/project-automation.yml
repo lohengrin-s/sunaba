@@ -18,26 +18,10 @@ jobs:
           script: |
             const issueId = context.payload.issue.node_id;
             
-            const projectNumber = 1; // あなたのProjects番号に変更してください
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            // プロジェクトID取得
-            const { repository } = await github.graphql(`
-              query($owner: String!, $repo: String!, $projectNumber: Int!) {
-                repository(owner: $owner, name: $repo) {
-                  projectV2(number: $projectNumber) {
-                    id
-                  }
-                }
-              }
-            `, {
-              owner,
-              repo,
-              projectNumber
-            });
-
-            const projectId = repository.projectV2.id;
+            const projectId = "PVT_kwHOAGqg_84A5tL2";
 
             // カードをProjectに追加
             await github.graphql(`
