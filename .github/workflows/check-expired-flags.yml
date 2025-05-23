@@ -7,8 +7,10 @@ on:
   workflow_dispatch:
 
 permissions: 
-  contents: read
-  issues: read
+  contents: write
+  issues: write
+  pull-requests: write
+  projects: write
 
 jobs:
   check-flags:
