@@ -16,16 +16,41 @@ jobs:
           GH_TOKEN: ${{ secrets.API_TOKEN }}
         with:
           script: |
-            const result = await github.graphql(`
-              query {
-                repository(owner: "leexei", name: "sunaba") {
-                  projectsV2(first: 10) {
-                    nodes {
-                      id
-                      title
-                    }
+            const issueId = context.payload.issue.node_id;
+            
+            const projectNumber = 1; // あなたのProjects番号に変更してください
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // プロジェクトID取得
+            const { repository } = await github.graphql(`
+              query($owner: String!, $repo: String!, $projectNumber: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  projectV2(number: $projectNumber) {
+                    id
                   }
                 }
               }
-            `);
-            console.log("Projects:", result.repository.projectsV2.nodes);
+            `, {
+              owner,
+              repo,
+              projectNumber
+            });
+
+            const projectId = repository.projectV2.id;
+
+            // カードをProjectに追加
+            await github.graphql(`
+              mutation($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                  item {
+                    id
+                  }
+                }
+              }
+            `, {
+              projectId,
+              contentId: issueId
+            });
+
+            console.log(`✅ Issue ${issueId} を Project ${projectId} に追加しました。`);
