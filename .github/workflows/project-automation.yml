@@ -35,6 +35,10 @@ jobs:
             `, {
               projectId,
               contentId: issueId
+            }, {
+              headers: {
+                Authorization: `Bearer ${process.env.GH_TOKEN}`
+              }
             });
 
             console.log(`✅ Issue ${issueId} を Project ${projectId} に追加しました。`);
