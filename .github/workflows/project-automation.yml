@@ -21,7 +21,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const projectId = "PVT_kwHOAGqg_84A5tL2";
+            const projectId = "PVT_kwDODLL6VM4A5__X";
 
             // カードをProjectに追加
             await github.graphql(`
