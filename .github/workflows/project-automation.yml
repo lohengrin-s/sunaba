@@ -14,4 +14,11 @@ jobs:
         run: |
           curl -X POST "https://s84z39if8b.execute-api.ap-northeast-1.amazonaws.com/prod/github-projects" \
             -H "Content-Type: application/json" \
-            -d '{"project_id": "PVT_kwDODLL6VM4A5__X", "content_id": "'${{ github.event.issue.node_id }}'"}'
+            -d '{
+              "project_id": "PVT_kwDODLL6VM4A5__X",
+              "content_id": "'${{ github.event.issue.node_id }}'",
+              "owner": "lohengrin-s",
+              "repo": "sunaba",
+              "issue_number": "${{ github.event.issue.number }}",
+              "item_id": "${{ steps.get_item_id.outputs.item_id }}"
+            }'
