@@ -45,8 +45,37 @@ def lambda_handler(event, context):
         if not option_id:
             return {"statusCode": 200, "body": "対応するカラムIDがありません"}
 
-        # 3. item_idを取得（content_idからproject内で検索）
-        # itemsを全件取得し、content.id==content_idのitemを探す
+        # 3. StatusフィールドIDを取得（fieldsからStatusを探す）
+        status_field_id = None
+        fields_query = '''
+        query($projectId: ID!) {
+          node(id: $projectId) {
+            ... on ProjectV2 {
+              fields(first: 50) {
+                nodes {
+                  ... on ProjectV2SingleSelectField {
+                    id
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+        '''
+        fields_resp = requests.post(
+            "https://api.github.com/graphql",
+            json={"query": fields_query, "variables": {"projectId": project_id}},
+            headers=headers
+        )
+        fields_data = fields_resp.json()
+        fields = fields_data.get("data", {}).get("node", {}).get("fields", {}).get("nodes", [])
+        for field in fields:
+            if field.get("name") == "Status":
+                status_field_id = field.get("id")
+                break
+
+        # 4. item_idを取得（content_idからproject内で検索）
         item_id = None
         items_query = '''
         query($projectId: ID!) {
@@ -77,45 +106,18 @@ def lambda_handler(event, context):
             if content.get("id") == content_id:
                 item_id = item.get("id")
                 break
+
         if not status_field_id or not item_id:
             return {"statusCode": 400, "body": "status_field_id, item_idが必要です"}
 
-        # 3. StatusフィールドIDを取得（fieldsからStatusを探す）
-        status_field_id = None
-        fields_query = '''
-        query($projectId: ID!) {
-          node(id: $projectId) {
-            ... on ProjectV2 {
-              fields(first: 50) {
-                nodes {
-                  ... on ProjectV2SingleSelectField {
-                    id
-                    name
-                  }
-                }
-              }
-            }
-          }
-        }
-        '''
-        fields_resp = requests.post(
-            "https://api.github.com/graphql",
-            json={"query": fields_query, "variables": {"projectId": project_id}},
-            headers=headers
-        )
-        fields_data = fields_resp.json()
-        fields = fields_data.get("data", {}).get("node", {}).get("fields", {}).get("nodes", [])
-        for field in fields:
-            if field.get("name") == "Status":
-                status_field_id = field.get("id")
-                break
-        if not status_field_id or not item_id:
-            return {"statusCode": 400, "body": "status_field_id, item_idが必要です"}
-
-        # 4. Statusフィールドを更新
+        print(f"status_field_id: {status_field_id}")
+        print(f"item_id: {item_id}")
+        print(f"option_id: {option_id}")
+        print(f"GraphQL mutation variables: {{'projectId': project_id, 'itemId': item_id, 'fieldId': status_field_id, 'optionId': option_id}}")
+        # 5. Statusフィールドを更新
         mutation = '''
         mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId: String!) {
-          setProjectV2ItemFieldValue(input: {
+          updateProjectV2ItemFieldValue(input: {
             projectId: $projectId,
             itemId: $itemId,
             fieldId: $fieldId,
@@ -136,6 +138,7 @@ def lambda_handler(event, context):
             json={"query": mutation, "variables": variables},
             headers=headers
         )
+        print(f"mutation response: {resp.status_code} {resp.text}")
         return {
             "statusCode": 200,
             "body": json.dumps(resp.json())
