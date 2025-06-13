@@ -32,6 +32,14 @@ jobs:
             const labels = context.payload.issue.labels.map(l => l.name);
             core.setOutput('labels', labels.join(','));
 
+      - name: Add Issue to Org Project v2
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
+        run: |
+          PROJECT_ID="PVT_kwDODLL6VM4A5__X" # ←Org Project v2のIDに置き換え
+          CONTENT_ID="${{ github.event.issue.node_id }}"
+          gh api graphql -F projectId=$PROJECT_ID -F contentId=$CONTENT_ID -f query='mutation($projectId:ID!, $contentId:ID!) { addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) { item { id } } }'
+
       - name: Set Project Status via GraphQL
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
@@ -73,11 +81,3 @@ jobs:
           fi
           # GraphQL mutationでStatus更新
           gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -F optionId=$OPTION_ID -f query='mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId: String!) { updateProjectV2ItemFieldValue(input: { projectId: $projectId, itemId: $itemId, fieldId: $fieldId, value: { singleSelectOptionId: $optionId } }) { projectV2Item { id } } }'
-
-      - name: Add Issue to Org Project v2
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
-        run: |
-          PROJECT_ID="PVT_kwDODLL6VM4A5__X" # ←Org Project v2のIDに置き換え
-          CONTENT_ID="${{ github.event.issue.node_id }}"
-          gh api graphql -F projectId=$PROJECT_ID -F contentId=$CONTENT_ID -f query='mutation($projectId:ID!, $contentId:ID!) { addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) { item { id } } }'
