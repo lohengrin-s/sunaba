@@ -1,5 +1,5 @@
 # .github/workflows/project-automation.yml
-name: Move Issue in Project
+name: Move Issue in Project (Org Project v2)
 
 on:
   issues:
@@ -9,16 +9,67 @@ jobs:
   move-issue:
     runs-on: ubuntu-latest
     environment: ActionsSecret
+    if: |
+      contains(github.event.issue.labels.*.name, 'feature-flag') ||
+      contains(github.event.issue.labels.*.name, 'impl-in-progress') ||
+      contains(github.event.issue.labels.*.name, 'released-off') ||
+      contains(github.event.issue.labels.*.name, 'flag-on') ||
+      contains(github.event.issue.labels.*.name, 'removal-scheduled') ||
+      contains(github.event.issue.labels.*.name, 'flag-removed')
     steps:
-      - name: Move issue to appropriate project column
+      - name: Generate GitHub App Token
+        id: generate-github-app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app_id: ${{ secrets.ISSUE_IN_PROJECT_TOOL_APP_ID }} # GitHub AppのID
+          private_key: ${{ secrets.ISSUE_IN_PROJECT_TOOL_PRIVATE_KEY }} # GitHub Appの秘密鍵
+
+      - name: Get Issue Labels
+        id: get_labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = context.payload.issue.labels.map(l => l.name);
+            core.setOutput('labels', labels.join(','));
+
+      - name: Set Project Status via GraphQL
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
         run: |
-          curl -X POST "https://s84z39if8b.execute-api.ap-northeast-1.amazonaws.com/prod/github-projects" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "project_id": "PVT_kwDODLL6VM4A5__X",
-              "content_id": "'${{ github.event.issue.node_id }}'",
-              "owner": "lohengrin-s",
-              "repo": "sunaba",
-              "issue_number": "${{ github.event.issue.number }}",
-              "item_id": "${{ steps.get_item_id.outputs.item_id }}"
-            }'
+          LABELS="${{ steps.get_labels.outputs.labels }}"
+          # ラベル名→カラムIDのマッピング
+          declare -A COLUMNS
+          COLUMNS=(
+            [feature-flag]=f75ad846
+            [impl-in-progress]=47fc9ee4
+            [released-off]=98236657
+            [flag-on]=7d7dc3a2
+            [removal-scheduled]=c60f827e
+            [flag-removed]=278b6e26
+          )
+          # 最初に一致したラベルのカラムIDを使う
+          OPTION_ID=""
+          for label in $(echo $LABELS | tr ',' ' '); do
+            if [[ -n "${COLUMNS[$label]}" ]]; then
+              OPTION_ID="${COLUMNS[$label]}"
+              break
+            fi
+          done
+          if [[ -z "$OPTION_ID" ]]; then
+            echo "No matching column for labels: $LABELS"
+            exit 0
+          fi
+          # Organization Project v2のID
+          PROJECT_ID="PVT_xxx" # ←Org Project v2のIDに置き換え
+          # StatusフィールドID
+          STATUS_FIELD_ID="PVTSSF_xxx" # ←StatusフィールドIDに置き換え
+          # Issueのnode_id
+          CONTENT_ID="${{ github.event.issue.node_id }}"
+          # itemId取得
+          ITEM_ID=$(gh api graphql -F projectId=$PROJECT_ID -f query='query($projectId: ID!) { node(id: $projectId) { ... on ProjectV2 { items(first: 100) { nodes { id content { ... on Issue { id } ... on PullRequest { id } } } } } } }' --jq ".data.node.items.nodes[] | select(.content.id==\"$CONTENT_ID\") | .id")
+          if [[ -z "$ITEM_ID" ]]; then
+            echo "itemId not found for contentId: $CONTENT_ID"
+            exit 1
+          fi
+          # GraphQL mutationでStatus更新
+          gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -F optionId=$OPTION_ID -f query='mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId: String!) { updateProjectV2ItemFieldValue(input: { projectId: $projectId, itemId: $itemId, fieldId: $fieldId, value: { singleSelectOptionId: $optionId } }) { projectV2Item { id } } }'
