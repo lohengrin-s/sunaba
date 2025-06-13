@@ -60,9 +60,9 @@ jobs:
             exit 0
           fi
           # Organization Project v2のID
-          PROJECT_ID="PVT_xxx" # ←Org Project v2のIDに置き換え
+          PROJECT_ID="PVT_kwDODLL6VM4A5__X" # ←Org Project v2のIDに置き換え
           # StatusフィールドID
-          STATUS_FIELD_ID="PVTSSF_xxx" # ←StatusフィールドIDに置き換え
+          STATUS_FIELD_ID="PVTSSF_lADODLL6VM4A5__Xzgus5fU" # ←StatusフィールドIDに置き換え
           # Issueのnode_id
           CONTENT_ID="${{ github.event.issue.node_id }}"
           # itemId取得
