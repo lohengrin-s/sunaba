@@ -38,7 +38,9 @@ jobs:
         run: |
           PROJECT_ID="PVT_kwDODLL6VM4A5__X" # ←Org Project v2のIDに置き換え
           CONTENT_ID="${{ github.event.issue.node_id }}"
-          gh api graphql -F projectId=$PROJECT_ID -F contentId=$CONTENT_ID -f query='mutation($projectId:ID!, $contentId:ID!) { addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) { item { id } } }'
+          echo "[DEBUG] PROJECT_ID=$PROJECT_ID CONTENT_ID=$CONTENT_ID"
+          ADD_ITEM_RESULT=$(gh api graphql -F projectId=$PROJECT_ID -F contentId=$CONTENT_ID -f query='mutation($projectId:ID!, $contentId:ID!) { addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) { item { id } } }')
+          echo "[DEBUG] addProjectV2ItemById result: $ADD_ITEM_RESULT"
 
       - name: Set Project Status via GraphQL
         env:
