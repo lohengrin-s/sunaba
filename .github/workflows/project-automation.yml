@@ -3,7 +3,7 @@ name: Move Issue in Project
 
 on:
   issues:
-    types: [opened, labeled, edited, reopend]
+    types: [opened, labeled, edited, reopened]
 
 jobs:
   move-issue:

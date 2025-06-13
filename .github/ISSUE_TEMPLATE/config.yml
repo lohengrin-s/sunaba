@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: ? Feature Flag 管理ガイドライン
+  - name: Feature Flag 管理ガイドライン
     url: https://example.com/feature-flag-guidelines
     about: Feature Flag の運用ポリシーや設計指針はこちらを参照してください。
