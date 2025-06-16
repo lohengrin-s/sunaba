@@ -85,10 +85,12 @@ jobs:
               break
             fi
           done
+          # optionIdを必ず文字列化
+          OPTION_ID="\"$OPTION_ID\""
           echo "=== optionId debug ==="
           echo "LABELS: $LABELS"
           echo "OPTION_ID: $OPTION_ID"
-          if [[ -z "$OPTION_ID" ]]; then
+          if [[ -z $OPTION_ID || $OPTION_ID == '""' ]]; then
             echo "No matching optionId for labels: $LABELS"
             exit 0
           fi
