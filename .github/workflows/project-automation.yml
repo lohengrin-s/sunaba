@@ -111,7 +111,15 @@ jobs:
             echo "itemId not found for contentId: $CONTENT_ID"
             exit 0
           fi
+          echo "OPTION_ID (raw): $OPTION_ID"
+          printf "OPTION_ID (printf): %s\n" "$OPTION_ID"
+          if [[ $OPTION_ID == \"*\" ]]; then
+            echo "OPTION_ID is quoted: $OPTION_ID"
+          else
+            echo "OPTION_ID is NOT quoted: $OPTION_ID"
+          fi
           # GraphQL mutationでStatus更新
+          echo "gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -F optionId=$OPTION_ID ..."
           gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -F optionId=$OPTION_ID -f query='mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId: String!) { updateProjectV2ItemFieldValue(input: { projectId: $projectId, itemId: $itemId, fieldId: $fieldId, value: { singleSelectOptionId: $optionId } }) { projectV2Item { id } } }'
 
       - name: Debug LABELS
