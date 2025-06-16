@@ -96,7 +96,7 @@ jobs:
             fi
           done
           # optionIdを必ず文字列化
-          OPTION_ID="\"$OPTION_ID\""
+          OPTION_ID=$OPTION_ID
           echo "=== optionId debug ==="
           echo "LABELS: $LABELS"
           echo "OPTION_ID: $OPTION_ID"
