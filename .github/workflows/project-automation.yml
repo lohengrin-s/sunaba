@@ -82,6 +82,17 @@ jobs:
               OPTION_IDS[$label]=$value
             fi
           done < <(env)
+          echo "=== OPTION_IDSの内容 ==="
+          for key in "${!OPTION_IDS[@]}"; do
+            echo "label: $key → optionId: ${OPTION_IDS[$key]}"
+          done
+          echo "======================="
+          echo "=== ラベルとoptionIdの対応 ==="
+          for label in $(echo $LABELS | tr ',' ' '); do
+            label_key=$(echo $label | tr ' ' '_' | tr '-' '_')
+            echo "label: $label_key → optionId: ${OPTION_IDS[$label_key]}"
+          done
+          echo "==========================="
           # 最初に一致したラベルのoptionIdを使う
           OPTION_ID=""
           for label in $(echo $LABELS | tr ',' ' '); do
