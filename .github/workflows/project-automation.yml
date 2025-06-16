@@ -72,9 +72,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
         run: |
-          echo "=== env OPTION_ID_* ==="
-          env | grep OPTION_ID_
+          set -a
           source option_ids.sh
+          set +a
+
+          echo "=== option_ids.shの内容 ==="
+          cat option_ids.sh
+          echo "=== 環境変数 OPTION_ID_* ==="
+          env | grep OPTION_ID_
+
           LABELS="${{ steps.get_labels.outputs.labels }}"
           PROJECT_ID="${{ steps.get_project_id.outputs.project_id }}"
           STATUS_FIELD_ID="${{ steps.get_status_fields.outputs.status_field_id }}"
