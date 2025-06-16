@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: ActionsSecret
     if: |
-      contains(github.event.issue.labels.*.name, 'feature-flag') ||
-      contains(github.event.issue.labels.*.name, 'impl-in-progress') ||
-      contains(github.event.issue.labels.*.name, 'released-off') ||
-      contains(github.event.issue.labels.*.name, 'flag-on') ||
-      contains(github.event.issue.labels.*.name, 'removal-scheduled') ||
-      contains(github.event.issue.labels.*.name, 'flag-removed')
+      contains(github.event.issue.labels.*.name, '🆕 追加予定') ||
+      contains(github.event.issue.labels.*.name, '⚙ 実装中') ||
+      contains(github.event.issue.labels.*.name, '🚀 リリース済（OFF）') ||
+      contains(github.event.issue.labels.*.name, '🟢 ON運用中') ||
+      contains(github.event.issue.labels.*.name, '🧹 削除予定') ||
+      contains(github.event.issue.labels.*.name, '✅ 削除完了')
     steps:
       - name: Generate GitHub App Token
         id: generate-github-app-token
