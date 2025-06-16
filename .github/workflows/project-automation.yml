@@ -30,6 +30,7 @@ jobs:
         with:
           script: |
             const labels = context.payload.issue.labels.map(l => l.name);
+            console.log('labels:', labels);
             core.setOutput('labels', labels.join(','));
 
       - name: Get Org Project v2 Node ID from project number
@@ -103,3 +104,6 @@ jobs:
           fi
           # GraphQL mutationでStatus更新
           gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -F optionId=$OPTION_ID -f query='mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId: String!) { updateProjectV2ItemFieldValue(input: { projectId: $projectId, itemId: $itemId, fieldId: $fieldId, value: { singleSelectOptionId: $optionId } }) { projectV2Item { id } } }'
+
+      - name: Debug LABELS
+        run: echo "LABELS=${{ steps.get_labels.outputs.labels }}"
