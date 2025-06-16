@@ -119,8 +119,8 @@ jobs:
             echo "OPTION_ID is NOT quoted: $OPTION_ID"
           fi
           # GraphQL mutationでStatus更新
-          echo "gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -F optionId=$OPTION_ID ..."
-          gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID optionId=$OPTION_ID -f query='
+          echo "gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -f optionId=$OPTION_ID ..."
+          gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -f optionId=$OPTION_ID -f query='
             mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId: String!) {
               updateProjectV2ItemFieldValue(
                 input: {
