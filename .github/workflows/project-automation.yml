@@ -54,8 +54,9 @@ jobs:
           gh api graphql -F projectId=$PROJECT_ID -f query='query($projectId: ID!) { node(id: $projectId) { ... on ProjectV2 { fields(first: 50) { nodes { ... on ProjectV2SingleSelectField { id name options { id name } } } } } } }' > fields.json
           STATUS_FIELD_ID=$(jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .id' fields.json)
           echo "status_field_id=$STATUS_FIELD_ID" >> $GITHUB_OUTPUT
-          # 各ラベル名→optionIdのマッピングを出力
-          jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | "option_id_" + (.name|gsub("[ -]";"_")) + "=" + .id' fields.json >> $GITHUB_OUTPUT
+          # 各ラベル名→optionIdのマッピングを環境変数としてエクスポート
+          jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | "export OPTION_ID_" + (.name|gsub("[ -]";"_")) + "=" + .id' fields.json >> option_ids.sh
+          cat option_ids.sh
 
       - name: Add Issue to Org Project v2
         env:
@@ -70,38 +71,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
         run: |
+          source option_ids.sh
           LABELS="${{ steps.get_labels.outputs.labels }}"
           PROJECT_ID="${{ steps.get_project_id.outputs.project_id }}"
           STATUS_FIELD_ID="${{ steps.get_status_fields.outputs.status_field_id }}"
-          # ラベル名→optionIdのマッピング
-          declare -A OPTION_IDS
-          # jqで出力したoption_id_ラベル名=IDを読み込む
-          while IFS== read -r key value; do
-            if [[ $key == option_id_* ]]; then
-              label=${key#option_id_}
-              OPTION_IDS[$label]=$value
-            fi
-          done < <(env)
-          echo "=== OPTION_IDSの内容 ==="
-          for key in "${!OPTION_IDS[@]}"; do
-            echo "label: $key → optionId: ${OPTION_IDS[$key]}"
-          done
-          echo "======================="
-          echo "=== ラベルとoptionIdの対応 ==="
-          for label in $(echo $LABELS | tr ',' ' '); do
-            label_key=$(echo $label)
-            echo "label: $label_key → optionId: ${OPTION_IDS[$label_key]}"
-          done
-          echo "==========================="
           # 最初に一致したラベルのoptionIdを使う
           OPTION_ID=""
           for label in $(echo $LABELS | tr ',' ' '); do
-            label_key=$(echo $label)
-            if [[ -n "${OPTION_IDS[$label_key]}" ]]; then
-              OPTION_ID="${OPTION_IDS[$label_key]}"
+            label_key=$(echo $label | tr ' ' '_' | tr '-' '_')
+            eval "oid=\$OPTION_ID_${label_key}"
+            if [[ -n "$oid" ]]; then
+              OPTION_ID="$oid"
               break
             fi
           done
+          echo "=== optionId debug ==="
+          echo "LABELS: $LABELS"
+          echo "OPTION_ID: $OPTION_ID"
           if [[ -z "$OPTION_ID" ]]; then
             echo "No matching optionId for labels: $LABELS"
             exit 0
