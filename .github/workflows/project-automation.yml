@@ -56,7 +56,7 @@ jobs:
           echo "status_field_id=$STATUS_FIELD_ID" >> $GITHUB_OUTPUT
           # 各ラベル名→optionIdのマッピングを環境変数としてエクスポート
           jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | "export OPTION_ID_" + (.name|gsub("[ -]";"_")) + "=\"" + (.id|tostring) + "\""' fields.json >> option_ids.sh
-          cat fields.json
+          cat fields.json | jq '.data.node.fields.nodes[] | select(.name=="Status") | .options[]'
           cat option_ids.sh
 
       - name: Add Issue to Org Project v2
