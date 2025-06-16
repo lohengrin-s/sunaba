@@ -128,7 +128,7 @@ jobs:
                   itemId: $itemId, 
                   fieldId: $fieldId, 
                   value: { 
-                    singleSelectOptionId: $optionId 
+                    singleSelectOptionId: "47fc9ee4" 
                   } 
                 }
               ) { 
