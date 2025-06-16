@@ -89,14 +89,14 @@ jobs:
           echo "======================="
           echo "=== ラベルとoptionIdの対応 ==="
           for label in $(echo $LABELS | tr ',' ' '); do
-            label_key=$(echo $label | tr ' ' '_' | tr '-' '_')
+            label_key=$(echo $label)
             echo "label: $label_key → optionId: ${OPTION_IDS[$label_key]}"
           done
           echo "==========================="
           # 最初に一致したラベルのoptionIdを使う
           OPTION_ID=""
           for label in $(echo $LABELS | tr ',' ' '); do
-            label_key=$(echo $label | tr ' ' '_' | tr '-' '_')
+            label_key=$(echo $label)
             if [[ -n "${OPTION_IDS[$label_key]}" ]]; then
               OPTION_ID="${OPTION_IDS[$label_key]}"
               break
