@@ -32,13 +32,36 @@ jobs:
             const labels = context.payload.issue.labels.map(l => l.name);
             core.setOutput('labels', labels.join(','));
 
+      - name: Get Org Project v2 Node ID from project number
+        id: get_project_id
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
+        run: |
+          ORG="lohengrin-s" # ←Organization名に置き換え
+          PROJECT_NUMBER=1    # ←URLの末尾の数値に置き換え
+          PROJECT_ID=$(gh api graphql -f query='query { organization(login: "'$ORG'") { projectV2(number: '$PROJECT_NUMBER') { id } } }' --jq ".data.organization.projectV2.id")
+          echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
+
+      - name: Get Status Field ID and Option IDs
+        id: get_status_fields
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
+        run: |
+          ORG="lohengrin-s"
+          PROJECT_ID="${{ steps.get_project_id.outputs.project_id }}"
+          # StatusフィールドIDと各optionIdを取得
+          gh api graphql -F projectId=$PROJECT_ID -f query='query($projectId: ID!) { node(id: $projectId) { ... on ProjectV2 { fields(first: 50) { nodes { ... on ProjectV2SingleSelectField { id name options { id name } } } } } } }' > fields.json
+          STATUS_FIELD_ID=$(jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .id' fields.json)
+          echo "status_field_id=$STATUS_FIELD_ID" >> $GITHUB_OUTPUT
+          # 各ラベル名→optionIdのマッピングを出力
+          jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | "option_id_" + (.name|gsub("[ -]";"_")) + "=" + .id' fields.json >> $GITHUB_OUTPUT
+
       - name: Add Issue to Org Project v2
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
         run: |
-          PROJECT_ID="PVT_kwDODLL6VM4A5__X" # ←Org Project v2のIDに置き換え
+          PROJECT_ID="${{ steps.get_project_id.outputs.project_id }}"
           CONTENT_ID="${{ github.event.issue.node_id }}"
-          echo "[DEBUG] PROJECT_ID=$PROJECT_ID CONTENT_ID=$CONTENT_ID"
           ADD_ITEM_RESULT=$(gh api graphql -F projectId=$PROJECT_ID -F contentId=$CONTENT_ID -f query='mutation($projectId:ID!, $contentId:ID!) { addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) { item { id } } }')
           echo "[DEBUG] addProjectV2ItemById result: $ADD_ITEM_RESULT"
 
@@ -47,33 +70,30 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
         run: |
           LABELS="${{ steps.get_labels.outputs.labels }}"
-          # ラベル名→カラムIDのマッピング
-          declare -A COLUMNS
-          COLUMNS=(
-            [feature-flag]=f75ad846
-            [impl-in-progress]=47fc9ee4
-            [released-off]=98236657
-            [flag-on]=7d7dc3a2
-            [removal-scheduled]=c60f827e
-            [flag-removed]=278b6e26
-          )
-          # 最初に一致したラベルのカラムIDを使う
+          PROJECT_ID="${{ steps.get_project_id.outputs.project_id }}"
+          STATUS_FIELD_ID="${{ steps.get_status_fields.outputs.status_field_id }}"
+          # ラベル名→optionIdのマッピング
+          declare -A OPTION_IDS
+          # jqで出力したoption_id_ラベル名=IDを読み込む
+          while IFS== read -r key value; do
+            if [[ $key == option_id_* ]]; then
+              label=${key#option_id_}
+              OPTION_IDS[$label]=$value
+            fi
+          done < <(env)
+          # 最初に一致したラベルのoptionIdを使う
           OPTION_ID=""
           for label in $(echo $LABELS | tr ',' ' '); do
-            if [[ -n "${COLUMNS[$label]}" ]]; then
-              OPTION_ID="${COLUMNS[$label]}"
+            label_key=$(echo $label | tr ' ' '_' | tr '-' '_')
+            if [[ -n "${OPTION_IDS[$label_key]}" ]]; then
+              OPTION_ID="${OPTION_IDS[$label_key]}"
               break
             fi
           done
           if [[ -z "$OPTION_ID" ]]; then
-            echo "No matching column for labels: $LABELS"
+            echo "No matching optionId for labels: $LABELS"
             exit 0
           fi
-          # Organization Project v2のID
-          PROJECT_ID="PVT_kwDODLL6VM4A5__X" # ←Org Project v2のIDに置き換え
-          # StatusフィールドID
-          STATUS_FIELD_ID="PVTSSF_lADODLL6VM4A5__Xzgus5fU" # ←StatusフィールドIDに置き換え
-          # Issueのnode_id
           CONTENT_ID="${{ github.event.issue.node_id }}"
           # itemId取得
           ITEM_ID=$(gh api graphql -F projectId=$PROJECT_ID -f query='query($projectId: ID!) { node(id: $projectId) { ... on ProjectV2 { items(first: 100) { nodes { id content { ... on Issue { id } ... on PullRequest { id } } } } } } }' --jq ".data.node.items.nodes[] | select(.content.id==\"$CONTENT_ID\") | .id")
