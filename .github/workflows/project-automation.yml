@@ -79,7 +79,7 @@ jobs:
           ITEM_ID=$(gh api graphql -F projectId=$PROJECT_ID -f query='query($projectId: ID!) { node(id: $projectId) { ... on ProjectV2 { items(first: 100) { nodes { id content { ... on Issue { id } ... on PullRequest { id } } } } } } }' --jq ".data.node.items.nodes[] | select(.content.id==\"$CONTENT_ID\") | .id")
           if [[ -z "$ITEM_ID" ]]; then
             echo "itemId not found for contentId: $CONTENT_ID"
-            exit 1
+            exit 0
           fi
           # GraphQL mutationでStatus更新
           gh api graphql -F projectId=$PROJECT_ID -F itemId=$ITEM_ID -F fieldId=$STATUS_FIELD_ID -F optionId=$OPTION_ID -f query='mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId: String!) { updateProjectV2ItemFieldValue(input: { projectId: $projectId, itemId: $itemId, fieldId: $fieldId, value: { singleSelectOptionId: $optionId } }) { projectV2Item { id } } }'
