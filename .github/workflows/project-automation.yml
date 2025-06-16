@@ -56,6 +56,7 @@ jobs:
           echo "status_field_id=$STATUS_FIELD_ID" >> $GITHUB_OUTPUT
           # 各ラベル名→optionIdのマッピングを環境変数としてエクスポート
           jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | "export OPTION_ID_" + (.name|gsub("[ -]";"_")) + "=" + .id' fields.json >> option_ids.sh
+          cat fields.json
           cat option_ids.sh
 
       - name: Add Issue to Org Project v2
@@ -71,6 +72,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
         run: |
+          echo "=== env OPTION_ID_* ==="
+          env | grep OPTION_ID_
           source option_ids.sh
           LABELS="${{ steps.get_labels.outputs.labels }}"
           PROJECT_ID="${{ steps.get_project_id.outputs.project_id }}"
@@ -80,6 +83,7 @@ jobs:
           for label in $(echo $LABELS | tr ',' ' '); do
             label_key=$(echo $label | tr ' ' '_' | tr '-' '_')
             eval "oid=\$OPTION_ID_${label_key}"
+            echo "label: $label_key → optionId: $oid"
             if [[ -n "$oid" ]]; then
               OPTION_ID="$oid"
               break
