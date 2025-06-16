@@ -55,7 +55,7 @@ jobs:
           STATUS_FIELD_ID=$(jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .id' fields.json)
           echo "status_field_id=$STATUS_FIELD_ID" >> $GITHUB_OUTPUT
           # 各ラベル名→optionIdのマッピングを環境変数としてエクスポート
-          jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | "export OPTION_ID_" + (.name|gsub("[ -]";"_")) + "=" + .id' fields.json >> option_ids.sh
+          jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | "export OPTION_ID_" + (.name|gsub("[ -]";"_")) + "=\"" + (.id|tostring) + "\""' fields.json >> option_ids.sh
           cat fields.json
           cat option_ids.sh
 
@@ -96,7 +96,7 @@ jobs:
             fi
           done
           # optionIdを必ず文字列化
-          OPTION_ID=${{ OPTION_ID }}
+          OPTION_ID="\"$OPTION_ID\""
           echo "=== optionId debug ==="
           echo "LABELS: $LABELS"
           echo "OPTION_ID: $OPTION_ID"
