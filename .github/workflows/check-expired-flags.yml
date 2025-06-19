@@ -10,7 +10,6 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
-  projects: write
 
 jobs:
   check-flags:
@@ -18,10 +17,15 @@ jobs:
     environment: ActionsSecret
     env:
       GITHUB_REPO: ${{ github.repository }}
-      ISSUE_LABEL: feature-flag # GitHubでこのラベルを用意しておいてください
-      GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
 
     steps:
+      - name: Generate GitHub App Token
+        id: generate-github-app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app_id: ${{ secrets.ISSUE_IN_PROJECT_TOOL_APP_ID }} # GitHub AppのID
+          private_key: ${{ secrets.ISSUE_IN_PROJECT_TOOL_PRIVATE_KEY }} # GitHub Appの秘密鍵
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -37,4 +41,6 @@ jobs:
         run: pip install python-dotenv
 
       - name: Run expired flag check
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-github-app-token.outputs.token }}
         run: python .github/scripts/check_expired_flags.py
