@@ -106,6 +106,9 @@ jobs:
           fi
           CONTENT_ID="${{ github.event.issue.node_id }}"
           # itemId取得
+          ALL_ITEMS=$(gh api graphql -F projectId=$PROJECT_ID -f query='query($projectId: ID!) { node(id: $projectId) { ... on ProjectV2 { items(first: 100) { nodes { id content { ... on Issue { id } ... on PullRequest { id } } } } } } }' --jq ".data.node.items.nodes[]")
+          echo "=== All items in project ==="
+          echo "$ALL_ITEMS" | jq -r '.content | if . != null then (.id) else "No content" end'
           ITEM_ID=$(gh api graphql -F projectId=$PROJECT_ID -f query='query($projectId: ID!) { node(id: $projectId) { ... on ProjectV2 { items(first: 100) { nodes { id content { ... on Issue { id } ... on PullRequest { id } } } } } } }' --jq ".data.node.items.nodes[] | select(.content.id==\"$CONTENT_ID\") | .id")
           if [[ -z "$ITEM_ID" ]]; then
             echo "itemId not found for contentId: $CONTENT_ID"
