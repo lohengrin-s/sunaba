@@ -1,7 +1,7 @@
 name: 🚩 Feature Flag 管理票
 description: FeatureFlag導入時の運用チケット
 title: "[FF] <フラグ名>"
-labels: [feature-flag]
+labels: [feature-flags-plan]
 body:
   - type: input
     id: flag_name
