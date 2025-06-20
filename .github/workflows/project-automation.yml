@@ -4,7 +4,7 @@ name: Move Issue in Project (Org Project v2)
 on:
   issues:
     types: [opened, labeled, edited, reopened]
-
+  workflow_dispatch:
 jobs:
   move-issue:
     runs-on: ubuntu-latest
